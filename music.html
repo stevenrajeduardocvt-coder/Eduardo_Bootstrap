@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
+
+  <!-- Google Fonts: Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+  <title>Music - Keshi</title>
+
+  <style>
+    /* ==========================
+       Global Styles
+    ========================== */
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      color: #eee;
+      min-height: 100vh;
+      padding-top: 72px; /* space for fixed navbar */
+      text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+      overflow-x: hidden;
+      cursor: url('guitar.gif'), auto;
+    }
+
+    /* ==========================
+       Background Video
+    ========================== */
+    #background-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2; /* behind overlay and content */
+    }
+
+    /* Dark overlay for readability */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: -1;
+    }
+
+    /* ==========================
+       Navbar
+    ========================== */
+    .navbar {
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: saturate(180%) blur(10px);
+      padding: 0.4rem 2rem;
+      font-weight: 600;
+      font-size: 1.4rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      z-index: 1030;
+    }
+
+    .navbar-brand {
+      width: 110px;
+      display: flex;
+      align-items: center;
+    }
+
+    .navbar-logo {
+      height: 70px;
+      width: auto;
+      transition: transform 0.3s ease;
+    }
+
+    .navbar-brand:hover .navbar-logo {
+      transform: scale(1.05);
+    }
+
+    .nav-link {
+      color: #eee;
+      margin-left: 1.3rem;
+      transition: color 0.25s ease, text-shadow 0.25s ease;
+      font-weight: 600;
+    }
+
+    .nav-link:hover, .nav-link:focus {
+      color: #ff3b3b;
+      text-shadow: 0 0 8px rgba(255,59,59,0.9);
+      outline: none;
+    }
+
+    .dropdown-menu {
+      background: rgba(0,0,0,0.85);
+      border: none;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.75);
+      font-size:1.2rem;
+      letter-spacing:0.04em;
+      padding:0.5rem 0;
+      border-radius:6px;
+      min-width:180px;
+      font-weight:400;
+    }
+
+    .dropdown-item {
+      color:#ddd;
+      padding:0.6rem 1.5rem;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      font-weight:400;
+    }
+
+    .dropdown-item:hover, .dropdown-item:focus {
+      background-color: rgba(255,59,59,0.15);
+      color:#ff3b3b;
+      outline:none;
+    }
+
+    .dropdown-divider { border-color: rgba(255,255,255,0.12); margin:0.3rem 0; }
+
+    /* ==========================
+       Page Layout
+    ========================== */
+    .page-container {
+      max-width: 1200px;
+      margin: 2rem auto 4rem;
+      padding: 0 1rem;
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    /* Keshi Portrait */
+    .keshi-photo-container {
+      flex: 1 1 300px;
+      max-width: 350px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .keshi-photo {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(181, 83, 103, 0.6);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .keshi-photo:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 25px rgba(105, 33, 150, 0.9);
+    }
+
+    .keshi-intro {
+      margin-top: 1rem;
+      font-size: 1rem;
+      line-height: 1.6;
+      text-align: center;
+      color: #eee;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+    }
+
+    /* Albums Grid */
+    .albums {
+      flex: 2 1 600px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1.6rem;
+    }
+
+    /* Album Card */
+    .album-card {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .album-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 10px 25px rgba(23, 64, 141, 0.9);
+    }
+
+    .album-cover {
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Album Info Overlay */
+    .album-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      padding: 0.75rem 0.5rem;
+      text-align: center;
+      backdrop-filter: blur(3px);
+    }
+
+    .album-title { font-size: 1.1rem; font-weight: 700; margin: 0; }
+    .album-year { font-size: 0.85rem; color: #efe9e9; font-weight: 600; margin: 0; }
+
+    /* ==========================
+       Responsive
+    ========================== */
+    @media(max-width:768px){
+      .navbar { padding: 0.4rem 1rem; }
+      .nav-link { font-size:1.1rem; margin-left:0; padding:0.5rem 1rem; }
+      .dropdown-menu { min-width:100%; font-size:1rem; }
+      .navbar-brand { width:90px; }
+      .navbar-logo { height:55px; }
+
+      .page-container { flex-direction: column; align-items: center; }
+      .keshi-photo-container { max-width: 100%; }
+      .albums { width: 100%; grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Background Video -->
+  <video autoplay muted loop playsinline id="background-video">
+    <source src="bandaidsvideo.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <a class="navbar-brand" href="index.html" aria-label="Home">
+      <img src="keshisticker1.png" alt="Keshi Logo" class="navbar-logo" />
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" 
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown active">
+          <a class="nav-link dropdown-toggle" href="#" id="musicDropdown" role="button" data-toggle="dropdown">About Me</a>
+          <div class="dropdown-menu" aria-labelledby="musicDropdown">
+            <a class="dropdown-item" href="hobbies.html">Hobbies</a>
+            <a class="dropdown-item" href="index.html">Favorite Anime</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+  <main class="page-container" role="main" aria-label="Keshi Music Content">
+
+    <!-- Keshi Portrait + Intro -->
+    <div class="keshi-photo-container">
+      <img src="casey1.jpg" alt="Keshi Portrait" class="keshi-photo" />
+      <p class="keshi-intro">
+        Keshi, born Casey Luong, is an American singer, songwriter, and producer known for his
+        lo-fi, R&B-influenced music. His soulful vocals and heartfelt lyrics have earned him
+        a dedicated fanbase worldwide.
+      </p>
+    </div>
+
+    <!-- Albums -->
+     
+    <section class="albums" aria-label="Keshi Albums">
+            <article class="album-card" tabindex="0">
+        <img src="reaper.jpg" alt="Album THE REAPER" class="album-cover" />
+        <div class="album-info">
+          <h3 class="album-title">THE REAPER</h3>
+          <p class="album-year">2018</p>
+        </div>
+      </article>
+
+      <article class="album-card" tabindex="0">
+        <img src="skeleton.jpg" alt="Album Skeletons" class="album-cover" />
+        <div class="album-info">
+          <h3 class="album-title">Skeletons</h3>
+          <p class="album-year">2019</p>
+        </div>
+      </article>
+
+      <article class="album-card" tabindex="0">
+        <img src="always.jpg" alt="Album Always" class="album-cover" />
+        <div class="album-info">
+          <h3 class="album-title">Always</h3>
+          <p class="album-year">2020</p>
+        </div>
+      </article>
+
+      <article class="album-card" tabindex="0">
+        <img src="gabriel.jpg" alt="Album GABRIEL" class="album-cover" />
+        <div class="album-info">
+          <h3 class="album-title">GABRIEL</h3>
+          <p class="album-year">2020</p>
+        </div>
+
+      </article>
+      <article class="album-card" tabindex="0">
+        <img src="trilogy.jpg" alt="Album Trilogy" class="album-cover" />
+        <div class="album-info">
+          <h3 class="album-title">Trilogy</h3>
+          <p class="album-year">2020</p>
+        </div>
+      </article>
+
+      <article class="album-card" tabindex="0">
+        <img src="bandaid.jpg" alt="Album BANDAID" class="album-cover" />
+        <div class="album-info">
+          <h3 class="album-title">BANDAID</h3>
+          <p class="album-year">2021</p>
+        </div>
+      </article>
+
+      <article class="album-card" tabindex="0">
+        <img src="requiem.jpg" alt="Album Requiem" class="album-cover" />
+        <div class="album-info">
+          <h3 class="album-title">Requiem</h3>
+          <p class="album-year">2024</p>
+        </div>
+      </article>
+    </section>
+
+  </main>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
